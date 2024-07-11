@@ -51,12 +51,13 @@ int main() {
 	printf("Waiting for a client to connect...\n");
 	client_addr_len = sizeof(client_addr);
 	
-	accept(server_fd, (struct sockaddr *) &client_addr, &client_addr_len);
+	// Accepting an incoming socket connection from a file descriptor
+	int fd = accept(server_fd, (struct sockaddr *) &client_addr, &client_addr_len);
 	printf("Client connected\n");
 
 	// Send a response to the client
 	char* response = "HTTP/1.1 200 OK\r\n\r\n";
-	sendmsg(server_fd, (struct msghdr *)response, 0);
+	int bytes_sent = send(fd, response, strlen(response), 0);
 
 	close(server_fd);
 
