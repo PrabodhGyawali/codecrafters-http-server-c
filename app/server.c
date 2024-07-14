@@ -53,11 +53,28 @@ int main() {
 	
 	// Accepting an incoming socket connection from a file descriptor
 	int fd = accept(server_fd, (struct sockaddr *) &client_addr, &client_addr_len);
+	if (fd < 0) {
+		printf("Error accepting connection %s \n", strerror(errno));
+		return 1;
+	}
 	printf("Client connected\n");
+
+	// Recieving network stream from incoming socket connection
+	char* network_stream = malloc(1025);
+	int ret = recv(fd, network_stream, 1024, 0);
+	if (ret < 0) {
+		printf("Error recieving socket stream: %s \n", strerror(errno));
+		return 1;
+	}
+	printf("\\%s\\ recieved from client", network_stream);
+
+	// Check url
+
+	free(network_stream);
 
 	// Send a response to the client
 	char* response = "HTTP/1.1 200 OK\r\n\r\n";
-	int bytes_sent = send(fd, response, strlen(response), 0);
+	int bytes_sent = send(fd, response, strlen(response), MSG_DONTWAIT);
 
 	close(server_fd);
 
