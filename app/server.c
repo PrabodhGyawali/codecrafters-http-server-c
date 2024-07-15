@@ -66,14 +66,22 @@ int main() {
 		printf("Error recieving socket stream: %s \n", strerror(errno));
 		return 1;
 	}
-	printf("\\%s\\ recieved from client", network_stream);
 
 	// Check url
+	char* method = strtok(network_stream, " ");
+	char* request_target = strtok(NULL, " ");
+	char* response;
 
+	if (request_target != "/") {
+		response = "HTTP/1.1 400 Not Found\r\n\r\n";
+	}
+	else {
+		response = "HTTP/1.1 200 OK\r\n\r\n";
+	}
+	printf("%s", response);
 	free(network_stream);
 
 	// Send a response to the client
-	char* response = "HTTP/1.1 200 OK\r\n\r\n";
 	int bytes_sent = send(fd, response, strlen(response), MSG_DONTWAIT);
 
 	close(server_fd);
