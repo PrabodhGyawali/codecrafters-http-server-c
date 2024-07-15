@@ -70,15 +70,22 @@ int main() {
 	// Check url
 	char* method = strtok(network_stream, " ");
 	char* request_target = strtok(NULL, " ");
-	char* response;
+	char response[1024];
 
-	if (strcmp(request_target, "/") != 0) {
-		response = "HTTP/1.1 404 Not Found\r\n\r\n";
+	
+	if (strncmp(request_target, "/echo/", 6) == 0 && strlen(request_target) > 6) {
+		// Get the request body
+		char* body = request_target + 6;
+		// Dynamically a request
+		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\n\r\n%s", body);
+	}
+	else if (strcmp(request_target, "/") != 0) {
+		snprintf(response, sizeof(response), "HTTP/1.1 404 Not Found\r\n\r\n");
 	}
 	else {
-		response = "HTTP/1.1 200 OK\r\n\r\n";
+		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\n\r\n");
 	}
-	printf("%s", response);
+	printf("{%s}\n", response);
 	free(network_stream);
 
 	// Send a response to the client
