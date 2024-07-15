@@ -72,7 +72,7 @@ int main() {
 	char* request_target = strtok(NULL, " ");
 	char* response;
 
-	if (request_target != "/") {
+	if (strcmp(request_target, "/") != 0) {
 		response = "HTTP/1.1 404 Not Found\r\n\r\n";
 	}
 	else {
