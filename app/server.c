@@ -76,8 +76,9 @@ int main() {
 	if (strncmp(request_target, "/echo/", 6) == 0 && strlen(request_target) > 6) {
 		// Get the request body
 		char* body = request_target + 6;
+        int content_length = strlen(body);
 		// Dynamically a request
-		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 3\r\n\r\n%s", body);
+		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s", content_length ,body);
 	}
 	else if (strcmp(request_target, "/") != 0) {
 		snprintf(response, sizeof(response), "HTTP/1.1 404 Not Found\r\n\r\n");
