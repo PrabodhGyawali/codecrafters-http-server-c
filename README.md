@@ -42,3 +42,15 @@ Note: This section is for stages 2 and beyond.
 Get the request target from socket stream in c.
 
 Tokenization with `strtok`
+
+### Read the User-Agent header line for path `/user-agent`
+Pseudo-code Function to get the line in the network stream with the User-Agent header:
+```
+function find_user_agent(network_stream):
+   tokenize network_stream by "\r\n" into lines
+   for each line in lines:
+      if line starts with "User-Agent":
+         extract the value part after ": "
+         return extracted value
+   return "Not Found" 
+```

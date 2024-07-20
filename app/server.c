@@ -8,12 +8,9 @@
 #include <unistd.h>
 
 int main() {
-	// Disable output buffering
+	/* Disable output buffering */
 	setbuf(stdout, NULL);
  	setbuf(stderr, NULL);
-
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	printf("Logs from your program will appear here!\n");
 
 	int server_fd, client_addr_len;
 	struct sockaddr_in client_addr;
@@ -72,7 +69,7 @@ int main() {
 	char* request_target = strtok(NULL, " ");
 	char response[1024];
 
-	
+	//// These are literally routes being created
 	if (strncmp(request_target, "/echo/", 6) == 0 && strlen(request_target) > 6) {
 		// Get the request body
 		char* body = request_target + 6;
@@ -80,13 +77,34 @@ int main() {
 		// Dynamically a request
 		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s", content_length ,body);
 	}
+    else if (strncmp(request_target, "/user-agent", 11) == 0 && strlen(request_target) == 11) {
+        // Read the User-Agent Header line
+		char* user_agent_value;
+        char* line = strtok(network_stream, "\r\n");
+        while (line != NULL) {
+            if (strncmp(line, "User-Agent:", 11) == 0) {
+                user_agent_value = line + 12;
+				break;
+            }
+            line = strtok(NULL, "\r\n");
+        }
+		if (user_agent_value)
+		{
+			int content_length = strlen(user_agent_value);
+			snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s", content_length, user_agent_value);
+		}
+		else {
+			snprintf(response, sizeof(response), "HTTP/1.1 404 Not Found\r\n\r\n");
+		}
+		
+    }
 	else if (strcmp(request_target, "/") != 0) {
 		snprintf(response, sizeof(response), "HTTP/1.1 404 Not Found\r\n\r\n");
 	}
 	else {
 		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\n\r\n");
 	}
-	printf("{%s}\n", response);
+	
 	free(network_stream);
 
 	// Send a response to the client
