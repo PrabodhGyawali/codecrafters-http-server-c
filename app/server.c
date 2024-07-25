@@ -77,7 +77,7 @@ int main() {
 		// Dynamically a request
 		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s", content_length ,body);
 	}
-    else if (strncmp(request_target, "/user-agent", 11) == 0 && strlen(request_target) == 11) {
+    else if (strncmp(request_target, "/user-agent", 11) == 0 && strlen(request_target) > 11) {
         // Read the User-Agent Header line
 		char* user_agent_value;
         char* line = strtok(network_stream, "\r\n");
