@@ -6,6 +6,14 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <ctype.h>
+
+char* stringToLower(char* str) {
+	for (int i = 0; str[i]; i++) {
+		str[i] = tolower(str[i]);
+	} // str[i] returns true or false depending on whether index i exists
+	return str;
+}
 
 int main() {
 	/* Disable output buffering */
@@ -65,10 +73,12 @@ int main() {
 	}
 
 	// Check url
-	char* method = strtok(network_stream, " ");
+	char* network_stream_method = strdup(network_stream);
+	char* method = strtok(network_stream_method, " ");
 	char* request_target = strtok(NULL, " ");
 	char response[1024];
 
+	
 	//// These are literally routes being created
 	if (strncmp(request_target, "/echo/", 6) == 0 && strlen(request_target) > 6) {
 		// Get the request body
@@ -77,16 +87,17 @@ int main() {
 		// Dynamically a request
 		snprintf(response, sizeof(response), "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s", content_length ,body);
 	}
-    else if (strncmp(request_target, "/user-agent", 11) == 0 && strlen(request_target) > 11) {
+    else if (strncmp(request_target, "/user-agent", 10) == 0) {
         // Read the User-Agent Header line
 		char* user_agent_value;
         char* line = strtok(network_stream, "\r\n");
         while (line != NULL) {
-            if (strncmp(line, "User-Agent:", 11) == 0) {
+            if (strncmp(stringToLower(line), "user-agent:", 10) == 0) {
                 user_agent_value = line + 12;
 				break;
             }
             line = strtok(NULL, "\r\n");
+			// printf("Line: {%s}\n", line);
         }
 		if (user_agent_value)
 		{
@@ -96,6 +107,7 @@ int main() {
 		else {
 			snprintf(response, sizeof(response), "HTTP/1.1 404 Not Found\r\n\r\n");
 		}
+		printf("%s", user_agent_value);
 		
     }
 	else if (strcmp(request_target, "/") != 0) {
